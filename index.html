@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Question pour toi 💗</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Trebuchet MS", Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      background: linear-gradient(135deg, #ffd6e7, #fff0f6, #e8d9ff);
+      color: #5b2745;
+    }
+
+    .hearts {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .heart {
+      position: absolute;
+      bottom: -40px;
+      font-size: 22px;
+      animation: float 7s linear infinite;
+      opacity: .65;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+      15% { opacity: .7; }
+      100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
+    }
+
+    .card {
+      width: min(92vw, 560px);
+      min-height: 470px;
+      padding: 42px 28px;
+      background: rgba(255,255,255,.86);
+      border: 2px solid rgba(255,255,255,.9);
+      border-radius: 30px;
+      box-shadow: 0 20px 60px rgba(123, 61, 102, .18);
+      text-align: center;
+      position: relative;
+      z-index: 2;
+      backdrop-filter: blur(8px);
+    }
+
+    .emoji {
+      font-size: 62px;
+      margin-bottom: 8px;
+      animation: pulse 1.8s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      50% { transform: scale(1.08); }
+    }
+
+    h1 {
+      margin: 8px 0 14px;
+      font-size: clamp(28px, 7vw, 42px);
+    }
+
+    p {
+      font-size: 18px;
+      line-height: 1.55;
+      margin: 12px auto;
+      max-width: 450px;
+    }
+
+    .question {
+      min-height: 125px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .question strong {
+      font-size: 25px;
+      display: block;
+      margin-bottom: 12px;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 25px;
+      min-height: 65px;
+      align-items: center;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 14px 25px;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform .25s ease, opacity .25s ease, font-size .25s ease, padding .25s ease;
+    }
+
+    .yes {
+      background: #ff5c9a;
+      color: white;
+      box-shadow: 0 8px 20px rgba(255,92,154,.3);
+    }
+
+    .no {
+      background: #eee;
+      color: #666;
+    }
+
+    button:hover { transform: scale(1.06); }
+
+    .progress {
+      margin-top: 28px;
+      font-size: 13px;
+      opacity: .6;
+    }
+
+    .hidden { display: none; }
+
+    .final-heart {
+      font-size: 85px;
+      animation: pulse 1.2s infinite;
+    }
+
+    .restart {
+      background: #f3d7e5;
+      color: #7a3859;
+      margin-top: 14px;
+    }
+
+    .tiny {
+      font-size: 14px;
+      opacity: .65;
+      margin-top: 18px;
+    }
+  
+    .angry-mode {
+      background: linear-gradient(135deg, #ff2b2b, #8b0000, #ff5a00);
+      color: white;
+      transition: background 1s ease, color 1s ease;
+    }
+
+    .angry-mode .card {
+      background: rgba(80, 0, 0, .72);
+      border-color: rgba(255,255,255,.3);
+      box-shadow: 0 20px 70px rgba(80,0,0,.45);
+    }
+
+    .angry-mode h1 {
+      color: white;
+    }
+
+    .flame {
+      position: absolute;
+      bottom: -50px;
+      font-size: 28px;
+      animation: flameFloat 4s linear infinite;
+      opacity: .9;
+    }
+
+    @keyframes flameFloat {
+      0% {
+        transform: translateY(0) rotate(-10deg) scale(.8);
+        opacity: 0;
+      }
+      15% { opacity: 1; }
+      100% {
+        transform: translateY(-115vh) rotate(15deg) scale(1.25);
+        opacity: 0;
+      }
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="hearts" id="hearts"></div>
+
+<main class="card">
+  <section id="screen">
+    <div class="emoji">💌</div>
+    <h1>J’ai une petite question pour toi…</h1>
+    <p>Promis, ça ne prendra que quelques secondes. 🥹💕</p>
+    <div class="buttons">
+      <button class="yes" onclick="start()">Commencer 💗</button>
+    </div>
+  </section>
+</main>
+
+<script>
+  const questions = [
+    "T’aime Bubu et Dudu ? 🥹💕",
+    "T’aime Paris ? 🗼❤️",
+    "Tu aimerais faire un bisous à Maison ? 😘"
+  ];
+
+  let index = -1;
+  let noClicks = 0;
+
+  const screen = document.getElementById("screen");
+
+  function start() {
+    index = 0;
+    showQuestion();
+  }
+
+  function showQuestion() {
+    if (index < questions.length) {
+      screen.innerHTML = `
+        <div class="emoji">${["🌸","💞","🫶","💗"][index]}</div>
+        <div class="question">
+          <strong>${questions[index]}</strong>
+        </div>
+        <div class="buttons">
+          <button class="yes" onclick="next()">Oui 💕</button>
+          <button class="no" onclick="next()">Peut-être 😳</button>
+        </div>
+        <div class="progress">Question ${index + 1} / ${questions.length}</div>
+      `;
+    } else {
+      showFinal();
+    }
+  }
+
+  function next() {
+    index++;
+    showQuestion();
+  }
+
+  function showFinal() {
+    screen.innerHTML = `
+      <div class="emoji">💗</div>
+      <div class="question">
+        <strong>Tu m’aimes ? 🥺❤️</strong>
+        <p id="tease">Choisis avec ton cœur…</p>
+      </div>
+      <div class="buttons">
+        <button class="yes" onclick="yes()">OUIII ❤️</button>
+        <button class="no" id="noBtn" onclick="nope()">Non 🙈</button>
+      </div>
+      <div class="tiny">Tu peux essayer de cliquer sur « Non »… 👀</div>
+    `;
+  }
+
+  function nope() {
+    noClicks++;
+
+    const btn = document.getElementById("noBtn");
+    const tease = document.getElementById("tease");
+
+    const messages = [
+      "Hmm… tu es sûr(e) ? 👀",
+      "Le bouton commence à devenir timide… 😭",
+      "Il rétrécit parce qu’il sait que tu vas dire oui. 😂",
+      "Encore un clic et il va devenir minuscule…",
+      "Bon… il ne reste presque plus que le OUI. 💗"
+    ];
+
+    tease.textContent = messages[Math.min(noClicks - 1, messages.length - 1)];
+
+    const scale = Math.max(0.12, 1 - noClicks * 0.18);
+    btn.style.transform = `scale(${scale})`;
+    btn.style.opacity = String(Math.max(0.25, 1 - noClicks * 0.13));
+
+    if (noClicks >= 6) {
+      btn.style.display = "none";
+      tease.textContent = "Il semblerait qu’il ne reste plus qu’une réponse… 💗";
+    }
+  }
+
+  function yes() {
+    document.body.classList.add("angry-mode");
+
+    screen.innerHTML = `
+      <div class="final-heart">😡</div>
+      <h1>Maintenant plus de bêtise haha</h1>
+      <p>🔥🔥🔥😈🔥🔥🔥</p>
+    `;
+
+    makeFlames(30);
+  }
+
+
+  function makeFlames(amount = 30) {
+    const container = document.getElementById("hearts");
+    container.innerHTML = "";
+
+    for (let i = 0; i < amount; i++) {
+      const f = document.createElement("span");
+      f.className = "flame";
+      f.textContent = ["🔥","🔥","😡"][Math.floor(Math.random() * 3)];
+      f.style.left = Math.random() * 100 + "vw";
+      f.style.animationDelay = Math.random() * 3 + "s";
+      f.style.animationDuration = (3 + Math.random() * 3) + "s";
+      container.appendChild(f);
+    }
+  }
+
+  function makeHearts(amount = 18) {
+    const container = document.getElementById("hearts");
+    for (let i = 0; i < amount; i++) {
+      const h = document.createElement("span");
+      h.className = "heart";
+      h.textContent = ["💗","💕","💖","💘","🌸"][Math.floor(Math.random()*5)];
+      h.style.left = Math.random() * 100 + "vw";
+      h.style.animationDelay = Math.random() * 5 + "s";
+      h.style.animationDuration = (5 + Math.random() * 5) + "s";
+      container.appendChild(h);
+    }
+  }
+
+  makeHearts(14);
+</script>
+
+</body>
+</html>
